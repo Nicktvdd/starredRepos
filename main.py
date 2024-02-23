@@ -46,3 +46,14 @@ async def starred_repos():
     async with httpx.AsyncClient() as client:
         response = await client.get(url='https://api.github.com/user/starred', headers=headers)
     return response.json()
+
+@app.get("/starred-repos/{username}")
+async def other_starred_repos(username: str):
+    global access_token
+    headers = {
+        'Accept': 'application/vnd.github.v3+json',
+        'Authorization': f'Bearer {access_token}'
+    }
+    async with httpx.AsyncClient() as client:
+        response = await client.get(url=f'https://api.github.com/users/{username}/starred', headers=headers)
+    return response.json()
