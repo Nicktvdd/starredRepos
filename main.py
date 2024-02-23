@@ -54,6 +54,8 @@ async def starred_repos():
                 repo_info["license"] = repo["license"]["name"]
             if repo["description"]:
                 repo_info["description"] = repo["description"]
+            if repo["topics"]:
+                repo_info["topics"] = repo["topics"]
             repos_info.append(repo_info)
     return {"number_of_starred_repos": len(repos_info), "repos": repos_info}
 
@@ -74,5 +76,7 @@ async def other_starred_repos(username: str):
             repo_info["license"] = repo["license"]["name"]
         if repo["description"]:
             repo_info["description"] = repo["description"]
+        if repo["topics"]:
+            repo_info["topics"] = repo["topics"]
         repos_info.append(repo_info)
     return {"number_of_starred_repos": len(repos_info), "repos": repos_info}
