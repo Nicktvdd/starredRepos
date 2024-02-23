@@ -8,12 +8,16 @@ github_client_secret = os.getenv("GITHUB_CLIENT_SECRET")
 
 app = FastAPI()
 
+# Global variable to store the access token
+access_token = None
+
 @app.get("/github-login")
 async def github_login():
-	return RedirectResponse(f'https://github.com/login/oauth/authorize?client_id={github_client_id}', status_code = 302)
+    return RedirectResponse(f'https://github.com/login/oauth/authorize?client_id={github_client_id}', status_code=302)
 
 @app.get("/github-code")
 async def github_code(code: str):
+    global access_token
     params = {
         'client_id': github_client_id,
         'client_secret': github_client_secret,
@@ -30,4 +34,15 @@ async def github_code(code: str):
     headers.update({'Authorization': f'Bearer {access_token}'})
     async with httpx.AsyncClient() as client:
         response = await client.get(url='https://api.github.com/user', headers=headers)
+    return response.json()
+
+@app.get("/starred-repos")
+async def starred_repos():
+    global access_token
+    headers = {
+        'Accept': 'application/vnd.github.v3+json',
+        'Authorization': f'Bearer {access_token}'
+    }
+    async with httpx.AsyncClient() as client:
+        response = await client.get(url='https://api.github.com/user/starred', headers=headers)
     return response.json()
