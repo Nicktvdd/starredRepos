@@ -46,7 +46,15 @@ async def starred_repos():
     async with httpx.AsyncClient() as client:
         response = await client.get(url='https://api.github.com/user/starred', headers=headers)
     starred_repos = response.json()
-    repos_info = [{"name": repo["name"], "url": repo["html_url"]} for repo in starred_repos if not repo["private"]]
+    repos_info = []
+    for repo in starred_repos:
+        if not repo["private"]:
+            repo_info = {"name": repo["name"], "url": repo["html_url"]}
+            if repo["license"]:
+                repo_info["license"] = repo["license"]["name"]
+            if repo["description"]:
+                repo_info["description"] = repo["description"]
+            repos_info.append(repo_info)
     return {"number_of_starred_repos": len(repos_info), "repos": repos_info}
 
 @app.get("/starred-repos/{username}")
@@ -58,5 +66,13 @@ async def other_starred_repos(username: str):
     }
     async with httpx.AsyncClient() as client:
         response = await client.get(url=f'https://api.github.com/users/{username}/starred', headers=headers)
-    repos_info = [{"name": repo["name"], "url": repo["html_url"]} for repo in response.json()]
+    starred_repos = response.json()
+    repos_info = []
+    for repo in starred_repos:
+        repo_info = {"name": repo["name"], "url": repo["html_url"]}
+        if repo["license"]:
+            repo_info["license"] = repo["license"]["name"]
+        if repo["description"]:
+            repo_info["description"] = repo["description"]
+        repos_info.append(repo_info)
     return {"number_of_starred_repos": len(repos_info), "repos": repos_info}
