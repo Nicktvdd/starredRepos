@@ -5,11 +5,9 @@ import httpx
 
 github_client_id = os.getenv("GITHUB_CLIENT_ID")
 github_client_secret = os.getenv("GITHUB_CLIENT_SECRET")
-
 app = FastAPI()
-
-# Global variable to store the access token
 access_token = None
+client = httpx.AsyncClient(headers={'Accept': 'application/vnd.github.v3+json'})
 
 @app.get("/github-login")
 async def github_login():
@@ -18,59 +16,44 @@ async def github_login():
 @app.get("/github-code")
 async def github_code(code: str):
     global access_token
-    params = {
-        'client_id': github_client_id,
-        'client_secret': github_client_secret,
-        'code': code
-    }
-    headers = {
-        'Accept': 'application/json'
-    }
-    async with httpx.AsyncClient() as client:
-        response = await client.post(url='https://github.com/login/oauth/access_token', params=params, headers=headers)
-    response_json = response.json()
-    print(response_json)
-    access_token = response_json['access_token']
-    headers.update({'Authorization': f'Bearer {access_token}'})
-    async with httpx.AsyncClient() as client:
-        response = await client.get(url='https://api.github.com/user', headers=headers)
-    return response.json()
+    params = get_params(code)
+    response = await make_request('post', 'https://github.com/login/oauth/access_token', params=params, headers={'Accept': 'application/json'})
+    access_token = response['access_token']
+    response = await make_request('get', 'https://api.github.com/user', headers={'Authorization': f'Bearer {access_token}'})
+    return response
 
 @app.get("/starred-repos")
 async def starred_repos():
     global access_token
-    headers = {
-        'Accept': 'application/vnd.github.v3+json',
-        'Authorization': f'Bearer {access_token}'
-    }
-    async with httpx.AsyncClient() as client:
-        response = await client.get(url='https://api.github.com/user/starred', headers=headers)
-    starred_repos = response.json()
-    res = create_repos_response(starred_repos)
-    return {"number_of_starred_repos": res["number_of_repos"], "repos": res["repos"]}
+    response = await make_request('get', 'https://api.github.com/user/starred', headers={'Authorization': f'Bearer {access_token}'})
+    return create_repos_response(response)
 
 @app.get("/starred-repos/{username}")
 async def other_starred_repos(username: str):
     global access_token
-    headers = {
-        'Accept': 'application/vnd.github.v3+json',
-        'Authorization': f'Bearer {access_token}'
-    }
-    async with httpx.AsyncClient() as client:
-        response = await client.get(url=f'https://api.github.com/users/{username}/starred', headers=headers)
-    starred_repos = response.json()
-    res = create_repos_response(starred_repos)
-    return {"number_of_starred_repos": res["number_of_repos"], "repos": res["repos"]}
+    response = await make_request('get', f'https://api.github.com/users/{username}/starred', headers={'Authorization': f'Bearer {access_token}'})
+    return create_repos_response(response)
+
+async def make_request(method, url, **kwargs):
+    response = await client.request(method, url, **kwargs)
+    return response.json()
 
 def create_repos_response(repos):
-    repos_info = []
-    for repo in repos:
-        repo_info = {"name": repo["name"], "url": repo["html_url"]}
-        if repo["license"]:
-            repo_info["license"] = repo["license"]["name"]
-        if repo["description"]:
-            repo_info["description"] = repo["description"]
-        if repo["topics"]:
-            repo_info["topics"] = repo["topics"]
-        repos_info.append(repo_info)
+    repos_info = [
+        {
+            "name": repo["name"],
+            "url": repo["html_url"],
+            "license": repo["license"]["name"] if repo["license"] else None,
+            "description": repo.get("description"),
+            "topics": repo.get("topics")
+        }
+        for repo in repos
+    ]
     return {"number_of_repos": len(repos_info), "repos": repos_info}
+
+def get_params(code: str):
+    return {
+        'client_id': github_client_id,
+        'client_secret': github_client_secret,
+        'code': code
+    }
