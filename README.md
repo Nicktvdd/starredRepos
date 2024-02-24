@@ -1,5 +1,25 @@
 # starredRepos
 
+## usage
+
+in repository root
+sudo apt install python3
+sudo apt install virtualenv
+python3 -m venv .venv
+source .venv/bin/activate
+pip install fastapi 
+pip install httpx
+pip install uvicorn
+pip install pytest
+
+### run
+uvicorn main:app --reload
+
+### test
+pytest
+
+
+
 https://www.youtube.com/watch?v=Pm938UxLEwQhttps://www.youtube.com/watch?v=Pm938UxLEwQ
 
 The exercise can be completed by focusing exclusively on one of the following tracks:
