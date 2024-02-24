@@ -18,9 +18,12 @@ async def github_code(code: str):
     global access_token
     params = get_params(code)
     response = await make_request('post', 'https://github.com/login/oauth/access_token', params=params, headers={'Accept': 'application/json'})
-    access_token = response['access_token']
-    response = await make_request('get', 'https://api.github.com/user', headers={'Authorization': f'Bearer {access_token}'})
-    return response
+    if 'access_token' in response:
+        access_token = response['access_token']
+        response = await make_request('get', 'https://api.github.com/user', headers={'Authorization': f'Bearer {access_token}'})
+        return response
+    else:
+        return {"error": "access_token not found in response", "response": response}
 
 @app.get("/starred-repos")
 async def starred_repos():
