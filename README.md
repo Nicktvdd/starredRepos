@@ -11,6 +11,7 @@ pip install fastapi
 pip install httpx
 pip install uvicorn
 pip install pytest
+pip install pytest-asyncio
 export GITHUB_CLIENT_SECRET=
 export GITHUB_CLIENT_ID=
 ```
