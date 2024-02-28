@@ -1,8 +1,8 @@
 # starredRepos
 
 ## usage
-
 in repository root
+```bash
 sudo apt install python3
 sudo apt install virtualenv
 python3 -m venv .venv
@@ -11,12 +11,22 @@ pip install fastapi
 pip install httpx
 pip install uvicorn
 pip install pytest
+export GITHUB_CLIENT_SECRET=
+export GITHUB_CLIENT_ID=
+```
+
 
 ### run
 uvicorn main:app --reload
 
 ### test
 pytest
+
+### usage
+Navigate to localhost:8000/github-login to log in and see your own profile<br>
+Navigate to localhost:8000/starred-repos to see your own starred repositories<br>
+Navigate to localhost:800/starred-repos/{username} to see the username's starred repositories
+
 
 
 
