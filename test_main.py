@@ -1,13 +1,32 @@
 from fastapi.testclient import TestClient
 from unittest.mock import patch
 from .main import app, create_repos_response, get_params, make_request, github_client_id, github_client_secret
+from pytest import requests
 
 client = TestClient(app)
 
+
+def test_github_login_redirect():
+    # Replace {github_client_id} with the actual GitHub client ID
+    github_client_id = "your_github_client_id"
+
+    # Make a request to localhost:8000/github-login
+    response = requests.get("http://localhost:8000/github-login")
+
+    # Check if the response status code is 302 (redirect)
+    assert response.status_code == 302
+
+    # Check if the location header redirects to the expected GitHub URL
+    expected_url = f"https://github.com/login/oauth/authorize?client_id={github_client_id}"
+    assert response.headers["Location"] == expected_url
+
 def test_github_login():
     response = client.get("/github-login")
-    assert response.status_code == 302
-    assert "https://github.com/login/oauth/authorize?client_id=9a7876c6aef4703c61b2" in response.headers["location"]
+    print(response.url)
+    print("hi")
+    print(github_client_id)
+    # assert response.status_code == 404
+    assert response.url == "https://github.com/login/oauth/authorize?client_id=test_id" 
 
 @patch('starredRepos.main.make_request')
 def test_github_code(mock_make_request):

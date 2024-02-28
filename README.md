@@ -7,11 +7,7 @@ sudo apt install python3
 sudo apt install virtualenv
 python3 -m venv .venv
 source .venv/bin/activate
-pip install fastapi 
-pip install httpx
-pip install uvicorn
-pip install pytest
-pip install pytest-asyncio
+pip install -r requirements.txt
 export GITHUB_CLIENT_SECRET=
 export GITHUB_CLIENT_ID=
 ```
