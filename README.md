@@ -8,6 +8,9 @@ sudo apt install virtualenv
 python3 -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
+```
+set variables in your os
+```bash
 export GITHUB_CLIENT_SECRET=
 export GITHUB_CLIENT_ID=
 ```
@@ -22,8 +25,7 @@ python -m pytest
 ### usage
 Navigate to localhost:8000/github-login to log in and see your own profile<br>
 Navigate to localhost:8000/starred-repos to see your own starred repositories<br>
-Navigate to localhost:800/starred-repos/{username} to see the username's starred repositories
-
+Navigate to localhost:8000/starred-repos/{username} to see the username's starred repositories
 
 
 
