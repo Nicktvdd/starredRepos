@@ -1,13 +1,12 @@
-import os
 from fastapi import FastAPI
 from starlette.responses import RedirectResponse
-import httpx
 
-github_client_id = os.getenv("GITHUB_CLIENT_ID")
-github_client_secret = os.getenv("GITHUB_CLIENT_SECRET")
+from services.create_repos_response import create_repos_response
+from services.get_params import get_params, github_client_id
+from services.make_request import make_request
+
 app = FastAPI()
 access_token = None
-client = httpx.AsyncClient(headers={'Accept': 'application/vnd.github.v3+json'})
 
 @app.get("/github-login")
 async def github_login():
@@ -36,36 +35,3 @@ async def other_starred_repos(username: str):
     global access_token
     response = await make_request('get', f'https://api.github.com/users/{username}/starred', headers={'Authorization': f'Bearer {access_token}'})
     return create_repos_response(response)
-
-async def make_request(method, url, **kwargs):
-    response = await client.request(method, url, **kwargs)
-    return response.json()
-
-def create_repos_response(repos):
-    repos_info = [
-        {
-            "name": repo["name"],
-            "url": repo["html_url"],
-            "license": repo["license"]["name"] if repo.get("license") else None,
-            "description": repo.get("description"),
-            "topics": repo.get("topics")
-        }
-        if repo.get("license")
-        else
-        {
-            "name": repo["name"],
-            "url": repo["html_url"],
-            "description": repo.get("description"),
-            "topics": repo.get("topics")
-        }
-        for repo in repos
-        if not repo.get("private")
-    ]
-    return {"number_of_repos": len(repos_info), "repos": repos_info}
-
-def get_params(code: str):
-    return {
-        'client_id': github_client_id,
-        'client_secret': github_client_secret,
-        'code': code
-    }

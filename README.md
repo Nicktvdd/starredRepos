@@ -12,12 +12,12 @@ export GITHUB_CLIENT_SECRET=
 export GITHUB_CLIENT_ID=
 ```
 
-
 ### run
 uvicorn main:app --reload
 
 ### test
-pytest
+python -m pytest
+
 
 ### usage
 Navigate to localhost:8000/github-login to log in and see your own profile<br>
