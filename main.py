@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 from starlette.responses import RedirectResponse
+from fastapi.exceptions import HTTPException
 
 from services.create_repos_response import create_repos_response
 from services.get_params import get_params, github_client_id
@@ -22,16 +23,20 @@ async def github_code(code: str):
         response = await make_request('get', 'https://api.github.com/user', headers={'Authorization': f'Bearer {access_token}'})
         return response
     else:
-        return {"error": "access_token not found in response", "response": response}
+        raise HTTPException(status_code=401, detail="Unauthorized")
 
 @app.get("/starred-repos")
 async def starred_repos():
     global access_token
+    if access_token is None:
+        raise HTTPException(status_code=401, detail="Unauthorized")
     response = await make_request('get', 'https://api.github.com/user/starred', headers={'Authorization': f'Bearer {access_token}'})
     return create_repos_response(response)
 
 @app.get("/starred-repos/{username}")
 async def other_starred_repos(username: str):
     global access_token
+    if access_token is None:
+        raise HTTPException(status_code=401, detail="Unauthorized")
     response = await make_request('get', f'https://api.github.com/users/{username}/starred', headers={'Authorization': f'Bearer {access_token}'})
     return create_repos_response(response)
