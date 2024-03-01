@@ -7,7 +7,7 @@ from .services.get_params import github_client_id
 client = TestClient(app)
 
 def test_github_login():
-    response = client.get("/github-login", allow_redirects=False)
+    response = client.get("/github-login", follow_redirects=False)
     print(response.url)
     print(github_client_id)
     assert response.status_code == 302
