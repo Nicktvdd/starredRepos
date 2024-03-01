@@ -29,7 +29,7 @@ Navigate to localhost:8000/starred-repos/{username} to see the username's starre
 
 
 
-https://www.youtube.com/watch?v=Pm938UxLEwQhttps://www.youtube.com/watch?v=Pm938UxLEwQ
+https://www.youtube.com/watch?v=Pm938UxLEwQ
 
 The exercise can be completed by focusing exclusively on one of the following tracks:
 - `backend` 
