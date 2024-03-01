@@ -1,7 +1,13 @@
-# starredRepos
+# StarredRepos
+## Description
+A **back-end** API created with **Python** & II that retrieves user's starred repositories from GitHub and displays in JSON format:
+- Number of starred repositories.
+- List of repositories, each repository containing information: name, description, URL, license (if exists) and topics.
+- Omitting private repositories from the list of repositories.
 
-## usage
-in repository root
+## Usage
+### Dependencies
+In repository root:
 ```bash
 sudo apt install python3
 sudo apt install virtualenv
@@ -9,28 +15,37 @@ python3 -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
 ```
-set variables in your os
+### Set environment variables in your session
+You can find them from Github: Settings / Developer Settings / {app name} <br>
+Application name: Starred repos <br>
+Homepage URL: http://localhost:8000 <br>
+Authorization callback URL: http://localhost:8000/github-code
 ```bash
 export GITHUB_CLIENT_SECRET=
 export GITHUB_CLIENT_ID=
 ```
 
 ### run
+```bash
 uvicorn main:app --reload
+```
 
 ### test
+```bash
 python -m pytest
+```
 
-
-### usage
+### Usage
 Navigate to localhost:8000/github-login to log in and see your own profile<br>
 Navigate to localhost:8000/starred-repos to see your own starred repositories<br>
 Navigate to localhost:8000/starred-repos/{username} to see the username's starred repositories
 
+### Resources
+https://www.youtube.com/watch?v=Pm938UxLEwQ for the basic set-up.
+Fastapi docs and collaboration for improvements.
 
 
-https://www.youtube.com/watch?v=Pm938UxLEwQ
-
+# Task
 The exercise can be completed by focusing exclusively on one of the following tracks:
 - `backend` 
 - `frontend`
